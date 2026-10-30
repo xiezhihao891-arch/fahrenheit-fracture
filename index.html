@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a1218" />
+<meta name="description" content="冷锋甬道 / Fahrenheit Fracture — 炎亚纶 × 汪东城 爱恨疏远史（粉丝解说，非官方）。CP=传闻；杀CP=实录。" />
+<title>冷锋甬道 · Fahrenheit Fracture · 炎亚纶 × 汪东城</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-temp="cold">
+
+<canvas id="frostCanvas" aria-hidden="true"></canvas>
+<div class="halogen-glare" aria-hidden="true"></div>
+<div class="corridor-parallax" id="corridorParallax" aria-hidden="true">
+  <div class="vp-floor"></div>
+  <div class="vp-ceil"></div>
+  <div class="vp-left"></div>
+  <div class="vp-right"></div>
+  <div class="vp-vanish"></div>
+</div>
+
+<!-- HUD -->
+<header class="hud" id="hud">
+  <div class="hud-left">
+    <span class="hud-brand">FAHRENHEIT FRACTURE</span>
+    <span class="hud-sep">│</span>
+    <span class="hud-ch" id="hudCh">ENTER</span>
+  </div>
+  <div class="hud-center">
+    <span class="hud-temp" id="hudTemp">41°F</span>
+    <span class="hud-label">CORRIDOR</span>
+  </div>
+  <div class="hud-right">
+    <button type="button" class="hud-btn" id="btnFilter" aria-pressed="false" title="只看可核实">FILTER: ALL</button>
+    <button type="button" class="hud-btn" id="btnSound" aria-pressed="false" title="音效默认静音">🔇 MUTE</button>
+  </div>
+</header>
+
+<!-- Magnetic chapter rail -->
+<nav class="mag-rail" id="magRail" aria-label="章节磁吸导航">
+  <button type="button" class="mag-btn active" data-i="0" title="入口"><i>00</i><span>入口</span></button>
+  <button type="button" class="mag-btn" data-i="1" title="同舟"><i>01</i><span>同舟</span></button>
+  <button type="button" class="mag-btn" data-i="2" title="裂隙"><i>02</i><span>裂隙</span></button>
+  <button type="button" class="mag-btn" data-i="3" title="除名"><i>03</i><span>除名</span></button>
+  <button type="button" class="mag-btn" data-i="4" title="杀CP"><i>04</i><span>杀CP</span></button>
+  <button type="button" class="mag-btn" data-i="5" title="指控"><i>05</i><span>指控</span></button>
+  <button type="button" class="mag-btn" data-i="6" title="没电话"><i>06</i><span>没电话</span></button>
+  <button type="button" class="mag-btn" data-i="7" title="金库"><i>07</i><span>金库</span></button>
+</nav>
+
+<main id="theater" class="theater">
+
+<!-- ===== CH 0 ENTER ===== -->
+<section class="ch" id="ch0" data-ch="入口 · BOOT" data-temp="cold">
+  <div class="ch-inner">
+    <p class="kicker mono">2005 → 2026 · WINTER BLUE-GREY · HALOGEN</p>
+    <h1 class="hero-title">
+      <span class="t-zh">冷锋甬道</span>
+      <span class="t-en mono">FAHRENHEIT FRACTURE</span>
+    </h1>
+    <p class="hero-sub">炎亚纶 <span class="x">×</span> 汪东城</p>
+    <p class="lead">飞轮海同船出道，却在解散后走成<strong>公开失联</strong>。粉丝 CP 叙事喧哗二十年；炎亚纶多次<strong>实录杀 CP</strong>，否认爱过、否认友谊、否认电话。汪东城侧回避配对、强调直男身份。本站不是 CP 混剪——是一条冬蓝混凝土甬道，把「爱恨情仇」拆成可核对的时间戳。</p>
+
+    <div class="framing-card">
+      <div class="fc-tag">READING PROTOCOL</div>
+      <ul>
+        <li><strong>CP 恋情</strong> = 粉丝创作 / 传闻，已被炎亚纶实录否认。</li>
+        <li><strong>播客骚扰 / 性取向嘲笑</strong> = 炎亚纶<strong>单方指控</strong>；他方未在本站复核来源中给出对等实录承认。</li>
+        <li>证据徽章：<span class="badge on-record">实录</span> <span class="badge paraphrase">媒体转述</span> <span class="badge allegation">单方指控</span> <span class="badge rumor">传闻</span></li>
+        <li>勿与艺人其他司法案件混为一谈。</li>
+      </ul>
+    </div>
+
+    <div class="temp-console" id="tempConsole">
+      <div class="tc-side aaron">
+        <div class="tc-name">AARON · 冬</div>
+        <div class="tc-deg" id="aaronDeg">41°F</div>
+        <div class="tc-hint">Fahrenheit「冬」意象</div>
+      </div>
+      <div class="tc-dial">
+        <label for="tempDial">拖动温度拨盘 · 重绘走廊色温</label>
+        <input type="range" id="tempDial" min="0" max="100" value="22" aria-valuetext="偏冬" />
+        <div class="tc-readout" id="tempReadout">走廊体感 · 冷锋主导</div>
+        <div class="tc-scale"><span>0°F</span><span>41</span><span>68</span><span>95</span><span>120°F</span></div>
+      </div>
+      <div class="tc-side jiro">
+        <div class="tc-name">JIRO · 夏</div>
+        <div class="tc-deg" id="jiroDeg">95°F</div>
+        <div class="tc-hint">Fahrenheit「夏」意象</div>
+      </div>
+    </div>
+
+    <button type="button" class="enter-btn" id="btnEnter">踏入甬道 · ENTER CORRIDOR</button>
+    <p class="status-chip"><span class="dot cold"></span> 现状（2026 末）：公开疏远 · 「连电话都没有」 · 无核实私人联系</p>
+  </div>
+</section>
+
+<!-- ===== CH 1 同舟 ===== -->
+<section class="ch" id="ch1" data-ch="01 · 同舟 2005–2011" data-temp="neutral">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 01 · SAME BOAT</p>
+    <h2>同舟：飞轮海出道高峰</h2>
+    <p class="prose">2005-12-28，飞轮海（Fahrenheit）出道。成员：吴尊、辰亦儒、汪东城、炎亚纶。随后数年是偶像工业高峰——《终极一班》等戏剧、专辑、巡演。粉丝文化里，「炎汪」CP 航运与团体热度同步生长：同框、同车、同台被剪进无数混剪。那是走廊还没有结霜的年代。</p>
+
+    <div class="timeline-spine">
+      <div class="ts-item" data-evidence="on-record">
+        <div class="ts-yr">2005-12-28</div>
+        <div class="ts-body">
+          <h3>飞轮海正式出道</h3>
+          <p>四人组亮相；团体名 Fahrenheit 自带温度隐喻——后来被本站借作 UI：冬侧 41°F（炎）对夏侧 95°F（汪）。</p>
+          <span class="badge on-record">实录 · 行业年表</span>
+        </div>
+      </div>
+      <div class="ts-item" data-evidence="on-record">
+        <div class="ts-yr">2005–2011</div>
+        <div class="ts-body">
+          <h3>偶像高峰期</h3>
+          <p>戏剧、专辑、两岸巡演；同框素材成为 CP 文化燃料。注意：粉丝航运 ≠ 当事人确认恋爱。</p>
+          <span class="badge on-record">公开履历</span>
+          <span class="badge rumor">CP 层 = 粉丝创作</span>
+        </div>
+      </div>
+      <div class="ts-item" data-evidence="allegation">
+        <div class="ts-yr">2006 前后<br /><small>（事后叙述）</small></div>
+        <div class="ts-body">
+          <h3>「摸彩球」——事后播客指控</h3>
+          <p>炎亚纶于 2025–2026 播客称：出道专辑宣传期间，外包企划等人在保姆车上玩涉及生殖器触碰的「摸彩球」游戏；他只能陪笑，「我对那段一直没办法释怀。」</p>
+          <span class="badge allegation">单方指控 · 播客实录</span>
+          <span class="badge rumor">未经独立裁决</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery" id="galDebut">
+      <figure class="gal wide" data-lightbox data-cap="飞轮海 @ Let’s Bike Taiwan 2009，日月潭。左→右：炎亚纶、辰亦儒、吴尊、汪东城 · Wikimedia Commons">
+        <img src="assets/fahrenheit-2009.jpg" alt="飞轮海 2009 日月潭" loading="lazy" />
+        <figcaption>2009 · Let’s Bike Taiwan · Commons</figcaption>
+      </figure>
+      <figure class="gal" data-lightbox data-cap="飞轮海 2007 团体照 · Wikimedia Commons">
+        <img src="assets/fahrenheit-2007.jpg" alt="飞轮海 2007" loading="lazy" />
+        <figcaption>2007 团体 · Commons</figcaption>
+      </figure>
+      <figure class="gal" data-lightbox data-cap="汪东城 2009 香港飞轮海演唱会 · Commons">
+        <img src="assets/jiro-2009.jpg" alt="汪东城 2009" loading="lazy" />
+        <figcaption>汪东城 2009 · Commons</figcaption>
+      </figure>
+      <figure class="gal" data-lightbox data-cap="炎亚纶肖像 · Commons">
+        <img src="assets/aaron-portrait.jpg" alt="炎亚纶肖像" loading="lazy" />
+        <figcaption>炎亚纶肖像 · Commons</figcaption>
+      </figure>
+    </div>
+
+    <div class="note-card">
+      <strong>图注说明</strong>：真正「仅炎+汪」双人清版权剧照在 Commons 稀缺。本站以团体照 + 单人照 + 明确标注的新闻缩图拼墙，不伪造双人浪漫构图。
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH 2 裂隙 ===== -->
+<section class="ch" id="ch2" data-ch="02 · 裂隙 2011–2014" data-temp="cooling">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 02 · THE FRACTURE</p>
+    <h2>裂隙：退团、单飞、「不是朋友」</h2>
+    <p class="prose">团体从四人到三人，再到实质解散。公开关系从「同船」滑向「演不了」。2014 年炎亚纶访谈成为第一道被广泛引用的冷锋声明。</p>
+
+    <div class="dual-walls" id="dualWalls2">
+      <div class="wall aaron-wall">
+        <header>炎亚纶墙 · WINTER</header>
+        <article class="stmt" data-evidence="on-record">
+          <time>2011-06</time>
+          <p>吴尊退团；三人组短暂延续。</p>
+          <span class="badge on-record">实录</span>
+        </article>
+        <article class="stmt" data-evidence="paraphrase">
+          <time>~2012–2013</time>
+          <p>团体活动实质结束（约解散后 11 年才有 2024 重聚舆论）。</p>
+          <span class="badge paraphrase">行业综述</span>
+        </article>
+        <article class="stmt highlight" data-evidence="on-record">
+          <time>2014-09</time>
+          <p>访谈：只与吴尊联络；汪东城、辰亦儒「<strong>都不是朋友</strong>」，他「演不了」。</p>
+          <span class="badge on-record">实录 · 中新网引今日新闻</span>
+        </article>
+      </div>
+      <div class="wall jiro-wall">
+        <header>汪东城墙 · SUMMER</header>
+        <article class="stmt" data-evidence="paraphrase">
+          <time>~2012–2013</time>
+          <p>离开公司 / 单飞路线启动。</p>
+          <span class="badge paraphrase">行业综述</span>
+        </article>
+        <article class="stmt highlight" data-evidence="on-record">
+          <time>2014</time>
+          <p>回应「不是朋友」：受伤；称未必是最好朋友，但是一起走过很多的<strong>伙伴</strong>。</p>
+          <span class="badge on-record">实录回应</span>
+        </article>
+        <article class="stmt muted" data-evidence="on-record">
+          <time>—</time>
+          <p>此后多年：公开联合活动稀缺；私人联系状态不明，直至炎侧多次否认。</p>
+          <span class="badge on-record">缺席即信息</span>
+        </article>
+      </div>
+    </div>
+    <p class="sync-hint mono">↕ 双墙很少对齐 · 左右滑动查看移动端完整轨</p>
+
+    <div class="quote-receipt stamped" data-stamp="DENIED">
+      <blockquote>「都不是朋友」——演不了。</blockquote>
+      <cite>炎亚纶 · 2014-09 访谈 · 中新网 / 今日新闻 · 实录</cite>
+    </div>
+
+    <div class="gallery compact">
+      <figure class="gal" data-lightbox data-cap="炎亚纶 2013-07-13 香港「睡不著」音乐会 · Commons">
+        <img src="assets/aaron-2013-1.jpg" alt="炎亚纶 2013 香港" loading="lazy" />
+        <figcaption>炎 2013 HK · Commons</figcaption>
+      </figure>
+      <figure class="gal" data-lightbox data-cap="炎亚纶 2013 香港音乐会另一角度 · Commons">
+        <img src="assets/aaron-2013-2.jpg" alt="炎亚纶 2013" loading="lazy" />
+        <figcaption>炎 2013 alt · Commons</figcaption>
+      </figure>
+      <figure class="gal" data-lightbox data-cap="炎亚纶 2021-01-24 高雄签唱 · Commons">
+        <img src="assets/aaron-2021.jpg" alt="炎亚纶 2021" loading="lazy" />
+        <figcaption>炎 2021 高雄 · Commons</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH 3 除名 ===== -->
+<section class="ch" id="ch3" data-ch="03 · 除名隐喻 2024-02" data-temp="cold">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 03 · FOUR SEATS / ONE ERASED</p>
+    <h2>巡回巴士的四个位子</h2>
+    <p class="prose">2024 年 Energy 重聚热度外溢，吴尊被问飞轮海会不会重聚。汪东城玩笑式回应：找「另外三个」——自己、辰亦儒，与<strong>郭品超</strong>（不是炎亚纶）。舆论普遍读作社交除名 / 擦除。</p>
+
+    <div class="van-stage" aria-label="四人座巡回巴士示意（非纪实）">
+      <div class="van-roof mono">TOUR VAN · FAHRENHEIT · DIAGRAM ONLY</div>
+      <div class="van-seats">
+        <div class="seat" data-member="wu">
+          <span class="seat-no">01</span>
+          <strong>吴尊</strong>
+          <small>2011 退团</small>
+        </div>
+        <div class="seat" data-member="calvin">
+          <span class="seat-no">02</span>
+          <strong>辰亦儒</strong>
+          <small>仍被点名</small>
+        </div>
+        <div class="seat" data-member="jiro">
+          <span class="seat-no">03</span>
+          <strong>汪东城</strong>
+          <small>点名者</small>
+        </div>
+        <div class="seat erased" data-member="aaron">
+          <span class="seat-no">04</span>
+          <strong>炎亚纶</strong>
+          <small>2024 玩笑未点名</small>
+          <div class="x-mark" aria-hidden="true">✕</div>
+        </div>
+      </div>
+      <div class="van-replace">
+        <span class="mono">SUBSTITUTE NAMED:</span> <strong>郭品超</strong>
+      </div>
+      <p class="van-note">示意非纪实座位表 · 基于 2024-02 公开玩笑回应的舆论解读（联合早报等）</p>
+    </div>
+
+    <figure class="gal wide hero-shot" data-lightbox data-cap="团体时代新闻配图 · NOWnews 2026 专题缩图">
+      <img src="assets/nownews-group.webp" alt="飞轮海新闻配图" loading="lazy" />
+      <figcaption>新闻配图 · NOWnews · 非双人定情照</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== CH 4 杀CP ===== -->
+<section class="ch" id="ch4" data-ch="04 · 杀CP 2024" data-temp="freeze">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 04 · CP KILL RECEIPTS</p>
+    <h2>红章：DENIED / 杀CP</h2>
+    <p class="prose">2024-02-26，网友留言「你对汪东城死心吧…」。炎亚纶回复——这是整条甬道里最硬的一枚收据：</p>
+
+    <div class="stamp-board" id="stampBoard">
+      <button type="button" class="receipt" data-quote="never-loved">
+        <div class="rcpt-head mono">RECEIPT · ON-RECORD</div>
+        <div class="rcpt-body">「我从来没爱过汪东城…我怎么可能会爱一个整天以性取向羞辱人的人？」</div>
+        <div class="rcpt-meta">2024-02-26 · 社交回复 · 联合早报 · 点击盖章</div>
+        <div class="rcpt-stamp" aria-hidden="true">DENIED<br />杀CP</div>
+      </button>
+      <button type="button" class="receipt" data-quote="not-friends">
+        <div class="rcpt-head mono">RECEIPT · ON-RECORD</div>
+        <div class="rcpt-body">汪东城、辰亦儒「都不是朋友」——「演不了」</div>
+        <div class="rcpt-meta">2014-09 · 访谈 · 中新网 · 点击盖章</div>
+        <div class="rcpt-stamp" aria-hidden="true">DENIED<br />非友</div>
+      </button>
+      <button type="button" class="receipt" data-quote="no-phone">
+        <div class="rcpt-head mono">RECEIPT · ON-RECORD</div>
+        <div class="rcpt-body">「我连他电话都没有」</div>
+        <div class="rcpt-meta">2026-03-17 · 直播 · SETN · 点击盖章</div>
+        <div class="rcpt-stamp" aria-hidden="true">DENIED<br />NO TEL</div>
+      </button>
+      <button type="button" class="receipt soft" data-quote="knot">
+        <div class="rcpt-head mono">RECEIPT · MEDIA PARAPHRASE</div>
+        <div class="rcpt-body">不会飞轮海重聚；与汪「观念差异」；「解铃还须系铃人」——汪是系铃人。留下「或许有一天」软门缝。</div>
+        <div class="rcpt-meta">2024-11 活动 · 腾讯/娱说电影转述 · 点击盖章</div>
+        <div class="rcpt-stamp soft" aria-hidden="true">NO<br />REUNION</div>
+      </button>
+    </div>
+
+    <div class="caveat-box">
+      <strong>同时请记住</strong>：炎亚纶称大陆 CP 粉砸约 500 万冲微博热搜——此为<strong>他的说法</strong>。热搜金额未在本站独立审计。
+    </div>
+
+    <figure class="gal wide" data-lightbox data-cap="腾讯网 2024 拒复合 / 观念差异报道配图">
+      <img src="assets/tencent-2024.jpg" alt="腾讯 2024" loading="lazy" />
+      <figcaption>腾讯 2024-11 报道配图</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== CH 5 指控层 ===== -->
+<section class="ch" id="ch5" data-ch="05 · 播客指控层" data-temp="cold">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 05 · ALLEGATION LAYER</p>
+    <h2>播客层：单方证词，不是判决书</h2>
+    <p class="prose">2025-12 / 2026-02，播客（《哇!有事嗎》《激罵揪某聊》等）回流团体创伤叙述。本站把它们放进单独的「指控层」——有出处，但<strong>未经对等承认 / 司法认定</strong>。</p>
+
+    <div class="allegation-panel">
+      <div class="ap-protocol">
+        <strong>ALLEGATION READING PROTOCOL</strong>
+        <ol>
+          <li>说话人：炎亚纶（播客 / 访谈口述）</li>
+          <li>性质：单方指控 + 个人创伤叙述</li>
+          <li>他方：本站复核新闻中未见对等实录承认或完整反驳链</li>
+          <li>用法：理解他为何杀 CP、拒重聚；不要写成「全团已定罪」</li>
+        </ol>
+      </div>
+      <div class="ap-cards">
+        <article class="ap-card" data-evidence="allegation">
+          <h3>「摸彩球」</h3>
+          <p>出道宣传保姆车：外包企划等人的触碰游戏；陪笑；「一直没办法释怀」。</p>
+          <span class="badge allegation">单方指控</span>
+        </article>
+        <article class="ap-card" data-evidence="allegation">
+          <h3>性取向讪笑</h3>
+          <p>称其他三人常拿同性恋话题开玩笑；自己难受但仍配合。</p>
+          <span class="badge allegation">单方指控</span>
+        </article>
+        <article class="ap-card" data-evidence="allegation">
+          <h3>「靠喝酒过日子」</h3>
+          <p>「我有一整年是靠喝酒过日子的。」——团体岁月的自我描述。</p>
+          <span class="badge allegation">单方口述</span>
+        </article>
+      </div>
+    </div>
+
+    <div class="hotel-metaphor" aria-hidden="false">
+      <div class="hotel-row">
+        <div class="hotel-door locked"><span class="knob"></span><span class="tag">LOCKED</span></div>
+        <div class="hotel-door locked"><span class="knob"></span><span class="tag">LOCKED</span></div>
+        <div class="hotel-door ajar"><span class="knob"></span><span class="tag">?</span></div>
+      </div>
+      <p class="hotel-note"><strong>视觉隐喻</strong>：紧闭后台 / 酒店房门剪影 —— <em>非纪实场景</em>，勿当作「锁门追杀」事件还原。网传「炎追汪 / 锁门」属<strong>未核实传闻</strong>。</p>
+    </div>
+
+    <div class="caveat-box">
+      <strong>编辑框架警告</strong>：部分二手稿把吴尊描述为「和解橄榄枝」桥梁——在原始片段未核验前，本站标为<strong>编辑框架</strong>，不作事实陈列。
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH 6 没电话 ===== -->
+<section class="ch" id="ch6" data-ch="06 · 连电话都没有" data-temp="freeze">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 06 · NO PHONE · LATE 2026</p>
+    <h2>「我连他电话都没有」</h2>
+    <p class="prose">2026-03-17 直播，炎亚纶再次切断 CP 幻想。同阶段报道中，汪东城直播强调「哥包直的 / 铁直」，「别再把我跟那个联想在一块。」公开关系温度计停在冰点。</p>
+
+    <div class="status-board">
+      <div class="sb-item">
+        <div class="sb-k mono">CONTACT</div>
+        <div class="sb-v cold">无核实私人联系</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-k mono">AARON</div>
+        <div class="sb-v">反复杀 CP · 否认友谊 / 恋爱</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-k mono">JIRO</div>
+        <div class="sb-v">回避配对 · 强调直男 · 未见对等复合表态</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-k mono">REUNION</div>
+        <div class="sb-v cold">四人重聚：商业 / 法务 / 情感均极不可能</div>
+      </div>
+    </div>
+
+    <div class="dual-walls compact" id="dualWalls6">
+      <div class="wall aaron-wall">
+        <header>炎 · 2026-03</header>
+        <article class="stmt highlight" data-evidence="on-record">
+          <p>「我连他电话都没有」；劝 CP 粉停手。</p>
+          <span class="badge on-record">实录 · SETN</span>
+        </article>
+      </div>
+      <div class="wall jiro-wall">
+        <header>汪 · 直播（报道）</header>
+        <article class="stmt highlight" data-evidence="paraphrase">
+          <p>「哥包直的 / 铁直」；「别再把我跟那个联想在一块。」</p>
+          <span class="badge paraphrase">SETN 转述</span>
+        </article>
+      </div>
+    </div>
+
+    <figure class="gal wide" data-lightbox data-cap="三立新闻 2026-03 杀CP报道配图 · SETN">
+      <img src="assets/setn-2026.jpg" alt="SETN 2026" loading="lazy" />
+      <figcaption>SETN 2026-03 · 杀CP 报道配图</figcaption>
+    </figure>
+
+    <div class="final-thermometer" aria-label="关系温度终态">
+      <div class="ft-bar"><div class="ft-fill" id="ftFill"></div></div>
+      <div class="ft-labels mono"><span>FREEZE</span><span>ESTRANGED</span><span>REUNION?</span></div>
+      <p class="ft-caption">公开温度：冰点 · 指针钉在 FREEZE</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH 7 Quote vault + poll ===== -->
+<section class="ch" id="ch7" data-ch="07 · 语料金库" data-temp="cold">
+  <div class="ch-inner">
+    <p class="kicker mono">CHAPTER 07 · QUOTE VAULT + POLL</p>
+    <h2>语料金库 · 可核对的否定句</h2>
+    <p class="prose">把公开否定句单独陈列，避免被剪进 CP 混剪时丢上下文。每条保留证据等级与来源线索。</p>
+
+    <div class="vault" id="quoteVault">
+      <button type="button" class="vault-card" data-evidence="on-record">
+        <span class="badge on-record">实录</span>
+        <q>我从来没爱过汪东城…整天以性取向羞辱人的人</q>
+        <cite>炎 · 2024-02 · 联合早报</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="on-record">
+        <span class="badge on-record">实录</span>
+        <q>汪 / 辰「不是朋友」</q>
+        <cite>炎 · 2014 · 中新网</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="on-record">
+        <span class="badge on-record">实录</span>
+        <q>我连他电话都没有</q>
+        <cite>炎 · 2026-03 · SETN</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="paraphrase">
+        <span class="badge paraphrase">转述</span>
+        <q>哥包直的 · 别再把我跟那个联想在一块</q>
+        <cite>汪 · 直播 · SETN 转述</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="paraphrase">
+        <span class="badge paraphrase">转述</span>
+        <q>观念差异…解铃还须系铃人</q>
+        <cite>炎 · 2024-11 活动 · 媒体转述</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="allegation">
+        <span class="badge allegation">单方指控</span>
+        <q>摸彩球 / 讪笑同志 / 靠喝酒过日子</q>
+        <cite>炎 · 播客 2025–26</cite>
+      </button>
+      <button type="button" class="vault-card" data-evidence="rumor">
+        <span class="badge rumor">传闻</span>
+        <q>锁酒店门 / 炎追汪 等单箭头桥段</q>
+        <cite>网传 · 未核实</cite>
+      </button>
+    </div>
+
+    <div class="poll" id="poll" data-poll="ff-frame">
+      <h3>你怎么框定这段关系？</h3>
+      <p class="poll-note mono">本地匿名 · 只存你的浏览器 · 不上传</p>
+      <button type="button" class="poll-opt" data-val="estrange"><span class="bar"></span><span>公开疏远 / 杀CP 为主轴 <i class="pct"></i></span></button>
+      <button type="button" class="poll-opt" data-val="trauma"><span class="bar"></span><span>团体创伤证词为主轴 <i class="pct"></i></span></button>
+      <button type="button" class="poll-opt" data-val="cp"><span class="bar"></span><span>仍想看 CP 叙事（即使被否认） <i class="pct"></i></span></button>
+      <button type="button" class="poll-opt" data-val="unclear"><span class="bar"></span><span>证据不足，不下结论 <i class="pct"></i></span></button>
+      <div class="poll-result" id="pollResult" hidden></div>
+    </div>
+
+    <div class="full-timeline">
+      <h3 class="mono">FULL TIMELINE · 2005 → 2026</h3>
+      <ol class="ft-list">
+        <li><b>2005-12-28</b> 飞轮海出道 <span class="badge on-record">实录</span></li>
+        <li><b>2005–2011</b> 偶像高峰；CP 航运兴起 <span class="badge on-record">履历</span><span class="badge rumor">CP=粉丝</span></li>
+        <li><b>2006≈</b> 「摸彩球」——事后播客指控 <span class="badge allegation">单方</span></li>
+        <li><b>2011-06</b> 吴尊退团 <span class="badge on-record">实录</span></li>
+        <li><b>~2012–13</b> 汪单飞；团体实质结束 <span class="badge paraphrase">综述</span></li>
+        <li><b>2014-09</b> 炎：「不是朋友」；汪回应受伤但仍称伙伴 <span class="badge on-record">实录</span></li>
+        <li><b>2024-02</b> 汪玩笑点名「另外三」含郭品超 <span class="badge on-record">社交</span></li>
+        <li><b>2024-02-26</b> 炎：「我从来没爱过汪东城」 <span class="badge on-record">实录</span></li>
+        <li><b>2024-11</b> 炎：不重聚；观念差异；系铃人 <span class="badge paraphrase">转述</span></li>
+        <li><b>2025-12 / 26-02</b> 播客再提创伤 <span class="badge allegation">单方</span></li>
+        <li><b>2026-03-17</b> 炎：「连电话都没有」；汪侧避配对 <span class="badge on-record">实录</span></li>
+        <li><b>2026 末</b> 公开疏远固化；四人重聚极不可能 <span class="badge on-record">状态</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="sf-inner">
+    <h3>粉丝解说 · 非官方</h3>
+    <p>本站为粉丝整理的互动解说页，与炎亚纶、汪东城、飞轮海及任何经纪公司<strong>无任何隶属或授权关系</strong>。不代表当事人立场。</p>
+    <p>引述来自公开报道与播客口述；转述处已标注。图片优先 Wikimedia Commons；新闻 CDN 缩图仅作报道语境示意并附来源。</p>
+    <p class="mono">FAHRENHEIT FRACTURE · 冷锋甬道 · 2026 · NO PERSONAL BRANDING</p>
+    <p class="sf-nav">
+      <button type="button" id="btnTop">↑ 回到入口</button>
+    </p>
+  </div>
+</footer>
+
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+  <img id="lbImg" alt="" />
+  <p id="lbCap"></p>
+</div>
+
+<!-- Mobile prev/next -->
+<div class="mob-nav">
+  <button type="button" id="btnPrev" aria-label="上一章">←</button>
+  <button type="button" id="btnNext" aria-label="下一章">→</button>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
